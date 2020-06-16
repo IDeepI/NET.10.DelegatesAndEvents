@@ -1,34 +1,41 @@
 ﻿using System;
-using System.IO;
-using System.Windows.Forms;
+
+
 
 namespace NET._10.DelegatesAndEvents
 {
     class Program
     {
-        static Timer TheTimer;
+
         static void Main(string[] args)
         {
+            Timer TheTimer;
 
             GenerateTimer(out string timerName, out int timerValue);
 
             TheTimer = new Timer(timerName, timerValue);
-            TheTimer.TimerEvent += new TimerDelegate(TimerReciever);
+            TheTimer.StartTimer += new TimerDelegate(TimerStart);
             TheTimer.CountDown += new TimerDelegate(TimerCount);
+            TheTimer.TimesUpEvent += new TimerDelegate(TimerReciever);
             TheTimer.Start();
 
             Console.ReadKey();
             TheTimer.ToString();
         }
 
-        private static void TimerReciever(object sender, TimerEventArgs e)
+        private static void TimerStart(object sender, TimesUpEventArgs e)
         {
-            MessageBox.Show($"Timer '{ e.Name }' завершен за { e.Delay / 1000 } с.");
+            Console.WriteLine($"Timer '{ e.Name }' установлен на { e.Delay / 1000 } с.");
         }
-        
-        private static void TimerCount(object sender, TimerEventArgs e)
+
+        private static void TimerCount(object sender, TimesUpEventArgs e)
         {
-            Console.WriteLine($"Timer '{ e.Name }' - { e.RemainTime } с." );
+            Console.WriteLine($"Timer '{ e.Name }' - { e.RemainTime } с.");
+        }
+
+        private static void TimerReciever(object sender, TimesUpEventArgs e)
+        {
+            Console.WriteLine($"Timer '{ e.Name }' завершен за { e.Delay / 1000 } с.");
         }
 
         public static void GenerateTimer(out string timerName, out int timerValue)
@@ -52,23 +59,6 @@ namespace NET._10.DelegatesAndEvents
                 Console.WriteLine("Число не введено.");
                 return 0;
             }
-        }
-
-        private static void FeedbackToConsole(Int32 value)
-        {
-            Console.WriteLine("Item=" + value);
-        }
-
-        private static void FeedbackToMsgBox(Int32 value)
-        {
-            MessageBox.Show("Item=" + value);
-        }
-
-        private void FeedbackToFile(Int32 value)
-        {
-            StreamWriter sw = new StreamWriter("Status", true);
-            sw.WriteLine("Item=" + value);
-            sw.Close();
         }
     }
 }

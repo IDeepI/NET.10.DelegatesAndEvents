@@ -4,17 +4,17 @@ using System.Diagnostics;
 
 namespace NET._10.DelegatesAndEvents
 {
-    public delegate void TimerDelegate(object sender, TimerEventArgs e);
+    public delegate void TimerDelegate(object sender, TimesUpEventArgs e);
 
-    public class TimerEventArgs : EventArgs
+    public class TimesUpEventArgs : EventArgs
     {
-        public TimerEventArgs(string name, int delay) : base()
+        public TimesUpEventArgs(string name, int delay) : base()
         {
             this.Name = name;
             this.Delay = delay;
         }
 
-        public TimerEventArgs(string name, int delay, int remainTime) : this(name, delay)
+        public TimesUpEventArgs(string name, int delay, int remainTime) : this(name, delay)
         {
             this.RemainTime = remainTime;
         }
@@ -28,8 +28,10 @@ namespace NET._10.DelegatesAndEvents
 
     class Timer
     {
-        public event TimerDelegate TimerEvent;
+        public event TimerDelegate StartTimer;
         public event TimerDelegate CountDown;
+        public event TimerDelegate TimesUpEvent;
+        
 
         string name;
         int delay;
@@ -45,30 +47,36 @@ namespace NET._10.DelegatesAndEvents
         {
             Thread thread = new Thread(new ThreadStart(() => {
 
+                OnStartTimer(this, new TimesUpEventArgs(name, delay));
+
                 var sw = Stopwatch.StartNew();               
                 do
-                {
-                    //Console.WriteLine("Thread {0}: Elapsed {1:N2} seconds",
-                    //                  Thread.CurrentThread.ManagedThreadId,
-                    //                  sw.ElapsedMilliseconds / 1000.0);
-                    OnCountDown(this, new TimerEventArgs(name, delay, (delay - (int)sw.ElapsedMilliseconds) / 1000));
+                {                    
+                    OnCountDown(this, new TimesUpEventArgs(name, delay, (delay - (int)sw.ElapsedMilliseconds) / 1000));
                     Thread.Sleep(900);
-                } while (sw.ElapsedMilliseconds <= delay);
+                } while (sw.ElapsedMilliseconds < delay);
                 sw.Stop();
 
-                OnTimer(this, new TimerEventArgs(name, delay));
+                OnTimesUp(this, new TimesUpEventArgs(name, delay));
             }));
             thread.Start();
+
         }
 
-        protected virtual void OnTimer(object sender, TimerEventArgs e)
+        protected virtual void OnStartTimer(object sender, TimesUpEventArgs e)
         {
-            TimerEvent?.Invoke(sender, e);
+            StartTimer?.Invoke(sender, e);
         }
 
-        protected virtual void OnCountDown(object sender, TimerEventArgs e)
+        protected virtual void OnCountDown(object sender, TimesUpEventArgs e)
         {
             CountDown?.Invoke(sender, e);
         }
+
+        protected virtual void OnTimesUp(object sender, TimesUpEventArgs e)
+        {
+            TimesUpEvent?.Invoke(sender, e);
+        }
+
     }
 }
