@@ -11,16 +11,16 @@ namespace NET._10.DelegatesAndEvents
     {
         void ICutDownNotifier.Init(Timer theTimer)
         {
-            theTimer.StartTimer += new TimerDelegate(
+            theTimer.StartTimer += new TimerEventHandler(
                 delegate(object sender, TimesUpEventArgs e) 
             { 
                 Console.WriteLine($"Timer '{ e.Name }' установлен на { e.Delay / 1000 } с."); 
             });
-            theTimer.CountDown += new TimerDelegate(delegate (object sender, TimesUpEventArgs e)
+            theTimer.CountDown += new TimerEventHandler(delegate (object sender, TimesUpEventArgs e)
             {
                 Console.WriteLine($"Timer '{ e.Name }' - { e.RemainTime } с.");
             });
-            theTimer.TimesUpEvent += new TimerDelegate(delegate (object sender, TimesUpEventArgs e)
+            theTimer.TimesUp += new TimerEventHandler(delegate (object sender, TimesUpEventArgs e)
             {
                 Console.WriteLine($"Timer '{ e.Name }' завершен за { e.Delay / 1000 } с.");
             });

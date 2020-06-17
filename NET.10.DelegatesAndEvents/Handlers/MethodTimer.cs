@@ -11,9 +11,9 @@ namespace NET._10.DelegatesAndEvents
     {
         void ICutDownNotifier.Init(Timer theTimer)
         {
-            theTimer.StartTimer += new TimerDelegate(TimerStart);
-            theTimer.CountDown += new TimerDelegate(TimerCount);
-            theTimer.TimesUpEvent += new TimerDelegate(TimerReciever);
+            theTimer.StartTimer += new TimerEventHandler(TimerStart);
+            theTimer.CountDown += new TimerEventHandler(TimerCount);
+            theTimer.TimesUp += new TimerEventHandler(TimerReciever);
         }
 
         void ICutDownNotifier.Run(Timer theTimer)

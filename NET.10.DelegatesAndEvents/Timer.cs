@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace NET._10.DelegatesAndEvents
 {
-    public delegate void TimerDelegate(object sender, TimesUpEventArgs e);
+    public delegate void TimerEventHandler(object sender, TimesUpEventArgs e);
 
     public class TimesUpEventArgs : EventArgs
     {
@@ -26,11 +26,11 @@ namespace NET._10.DelegatesAndEvents
 
     }
 
-    class Timer
+    public class Timer
     {
-        public event TimerDelegate StartTimer;
-        public event TimerDelegate CountDown;
-        public event TimerDelegate TimesUpEvent;
+        public event TimerEventHandler StartTimer;
+        public event TimerEventHandler CountDown;
+        public event TimerEventHandler TimesUp;
         
 
         string name;
@@ -47,12 +47,12 @@ namespace NET._10.DelegatesAndEvents
         {
             Thread thread = new Thread(new ThreadStart(() => {
 
-                OnStartTimer(this, new TimesUpEventArgs(name, delay));
+                OnStartTimer( new TimesUpEventArgs(name, delay));
 
                 var sw = Stopwatch.StartNew();               
                 do
                 {                    
-                    OnCountDown(this, new TimesUpEventArgs(name, delay, (delay - (int)sw.ElapsedMilliseconds) / 1000));
+                    OnCountDown( new TimesUpEventArgs(name, delay, (delay - (int)sw.ElapsedMilliseconds) / 1000));
                     Thread.Sleep(900);
                 } while (sw.ElapsedMilliseconds < delay);
                 sw.Stop();
@@ -63,19 +63,19 @@ namespace NET._10.DelegatesAndEvents
 
         }
 
-        protected virtual void OnStartTimer(object sender, TimesUpEventArgs e)
+        protected virtual void OnStartTimer( TimesUpEventArgs e)
         {
-            StartTimer?.Invoke(sender, e);
+            StartTimer?.Invoke(this, e);
         }
 
-        protected virtual void OnCountDown(object sender, TimesUpEventArgs e)
+        protected virtual void OnCountDown( TimesUpEventArgs e)
         {
-            CountDown?.Invoke(sender, e);
+            CountDown?.Invoke(this, e);
         }
 
         protected virtual void OnTimesUp(object sender, TimesUpEventArgs e)
         {
-            TimesUpEvent?.Invoke(sender, e);
+            TimesUp?.Invoke(sender, e);
         }
 
     }
